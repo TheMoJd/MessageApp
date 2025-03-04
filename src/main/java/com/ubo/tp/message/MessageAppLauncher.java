@@ -4,6 +4,7 @@ import com.ubo.tp.message.core.EntityManager;
 import com.ubo.tp.message.core.database.Database;
 import com.ubo.tp.message.core.database.IDatabase;
 import com.ubo.tp.message.ihm.MessageApp;
+import com.ubo.tp.message.ihm.MessageAppMainView;
 import mock.MessageAppMock;
 
 /**
@@ -16,7 +17,7 @@ public class MessageAppLauncher {
 	/**
 	 * Indique si le mode bouchoné est activé.
 	 */
-	protected static boolean IS_MOCK_ENABLED = true;
+	protected static boolean IS_MOCK_ENABLED = false;
 
 	/**
 	 * Launcher.
@@ -24,6 +25,9 @@ public class MessageAppLauncher {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+		MessageAppMainView.initLookAndFeel();
+
 
 		IDatabase database = new Database();
 

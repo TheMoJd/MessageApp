@@ -13,41 +13,34 @@ import com.ubo.tp.message.core.directory.WatchableDirectory;
  * @author S.Lucas
  */
 public class MessageApp {
+
 	/**
 	 * Base de données.
 	 */
-	protected IDatabase   mDatabase;
+	protected IDatabase mDatabase;
 
 	/**
-	 * Gestionnaire des entités contenu de la base de données.
+	 * Gestionnaire des entités contenu dans la base de données.
 	 */
 	protected EntityManager mEntityManager;
 
 	/**
-	 * Vue principale de l'application.
+	 * Vue principale de l'application (fenêtre).
 	 */
 	protected MessageAppMainView mMainView;
 
 	/**
-	 * Classe de surveillance de répertoire
+	 * Surveillance de répertoire.
 	 */
 	protected IWatchableDirectory mWatchableDirectory;
 
 	/**
-	 * Répertoire d'échange de l'application.
+	 * Répertoire d'échange.
 	 */
 	protected String mExchangeDirectoryPath;
 
 	/**
-	 * Nom de la classe de l'UI.
-	 */
-	protected String mUiClassName;
-
-	/**
 	 * Constructeur.
-	 *
-	 * @param entityManager
-	 * @param database
 	 */
 	public MessageApp(IDatabase database, EntityManager entityManager) {
 		this.mDatabase = database;
@@ -58,55 +51,50 @@ public class MessageApp {
 	 * Initialisation de l'application.
 	 */
 	public void init() {
-		// Init du look and feel de l'application
-		this.initLookAndFeel();
+		// 1) Appliquer le Look & Feel AVANT la création des composants
+		//    pour qu'ils prennent tout de suite le style du système.
+		MessageAppMainView.initLookAndFeel();
 
-		// Initialisation de l'IHM
+		// 2) Créer et configurer la fenêtre principale (IHM)
 		this.initGui();
 
+		// 3) Ajouter un observateur pour afficher les modifications en console
 		mDatabase.addObserver(new ConsoleDatabaseObserver());
 
-		// Initialisation du répertoire d'échange
+		// 4) Initialiser le répertoire d'échange (vide ici, à adapter)
 		this.initDirectory();
 	}
 
 	/**
-	 * Initialisation du look and feel de l'application.
-	 */
-	protected void initLookAndFeel() {
-	}
-
-	/**
-	 * Initialisation de l'interface graphique.
+	 * Crée la fenêtre principale de l'application.
 	 */
 	protected void initGui() {
-		// this.mMainView...
+		// Instancie la fenêtre (avec menus, logo, etc.)
+		this.mMainView = new MessageAppMainView();
 	}
 
 	/**
-	 * Initialisation du répertoire d'échange (depuis la conf ou depuis un file
-	 * chooser). <br/>
-	 * <b>Le chemin doit obligatoirement avoir été saisi et être valide avant de
-	 * pouvoir utiliser l'application</b>
+	 * Initialisation du répertoire d'échange
+	 * (depuis la conf ou depuis un file chooser).
 	 */
 	protected void initDirectory() {
+		// Vous pouvez appeler initDirectory("chemin") ici
+		// si vous avez déjà un chemin défini, ou demander à l'utilisateur via un JFileChooser.
 	}
 
 	/**
-	 * Indique si le fichier donné est valide pour servir de répertoire d'échange
-	 *
-	 * @param directory , Répertoire à tester.
+	 * Vérifie si le répertoire est valide pour l'échange.
 	 */
 	protected boolean isValideExchangeDirectory(File directory) {
-		// Valide si répertoire disponible en lecture et écriture
-		return directory != null && directory.exists() && directory.isDirectory() && directory.canRead()
+		return directory != null
+				&& directory.exists()
+				&& directory.isDirectory()
+				&& directory.canRead()
 				&& directory.canWrite();
 	}
 
 	/**
-	 * Initialisation du répertoire d'échange.
-	 *
-	 * @param directoryPath
+	 * Initialisation du répertoire d'échange à partir d'un chemin donné.
 	 */
 	protected void initDirectory(String directoryPath) {
 		mExchangeDirectoryPath = directoryPath;
@@ -117,7 +105,12 @@ public class MessageApp {
 		mWatchableDirectory.addObserver(mEntityManager);
 	}
 
+	/**
+	 * Affiche la fenêtre principale de l'application.
+	 */
 	public void show() {
-		// ... setVisible?
+		if (mMainView != null) {
+			this.mMainView.setVisible(true);
+		}
 	}
 }
