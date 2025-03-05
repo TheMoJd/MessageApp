@@ -83,15 +83,11 @@ public class MessageAppMock {
 		mFrame = new JFrame("MOCK");
 		mFrame.setLayout(new GridBagLayout());
 
-		//
-		// Gestion de la base de données
-
 		JLabel dbLabel = new JLabel("Database");
 
 		Button addUserButton = new Button("Add User");
 		addUserButton.setPreferredSize(new Dimension(100, 50));
 		addUserButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				MessageAppMock.this.addUserInDatabase();
@@ -101,14 +97,13 @@ public class MessageAppMock {
 		Button addMessageButton = new Button("Add Message");
 		addMessageButton.setPreferredSize(new Dimension(100, 50));
 		addMessageButton.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				MessageAppMock.this.addMessageInDatabase();
 			}
 		});
 
-		//
+
 		// Gestion des fichiers
 
 		JLabel fileLabel = new JLabel("Files");

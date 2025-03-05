@@ -4,6 +4,7 @@ import com.ubo.tp.message.core.database.IDatabase;
 import com.ubo.tp.message.core.session.Session;
 import com.ubo.tp.message.datamodel.User;
 import com.ubo.tp.message.ihm.LoginView;
+import com.ubo.tp.message.ihm.RegisterFrame;
 
 import java.util.Set;
 
@@ -29,7 +30,8 @@ public class LoginController implements ILoginObserver {
 
     @Override
     public void notifyRegister() {
-        System.out.println("Ask for register");
+        // Ouvrir la vue d'inscription dans l'EDT
+        javax.swing.SwingUtilities.invokeLater(() -> new RegisterFrame(this.database));
     }
 
     /**
