@@ -62,7 +62,7 @@ public class MessageApp {
 		mDatabase.addObserver(new ConsoleDatabaseObserver());
 
 		// 4) Initialiser le répertoire d'échange (vide ici, à adapter)
-		this.initDirectory();
+		this.initDirectory("C:/");
 	}
 
 	/**
@@ -79,7 +79,8 @@ public class MessageApp {
 	 */
 	protected void initDirectory() {
 		// Vous pouvez appeler initDirectory("chemin") ici
-		// si vous avez déjà un chemin défini, ou demander à l'utilisateur via un JFileChooser.
+		// si vous avez déjà un chemin défini\
+
 	}
 
 	/**

@@ -24,17 +24,14 @@ public class MessageAppMainView extends JFrame {
      * Constructeur de la fenêtre principale.
      */
     public MessageAppMainView() {
-        // Définit le titre de la fenêtre
         super("MessageApp");
-
-        // Définir l'icône de l'application (logo)
 
         ImageIcon appIcon = new ImageIcon(("src/main/resources/images/logo_50.png"));
         setIconImage(appIcon.getImage());
 
         // Configuration initiale
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(800, 600); // taille par défaut
+        this.setSize(800, 600);
         this.setLocationRelativeTo(null); // centre la fenêtre à l'écran
 
         // Ajout d'une barre de menu
@@ -63,7 +60,7 @@ public class MessageAppMainView extends JFrame {
         });
         menuFichier.add(menuItemSelectDir);
 
-        // Ajout du menu Fichier à la barre
+        // Ajout du menu Fichier à la barre`
         menuBar.add(menuFichier);
 
         // ----- Menu Aide (?) -----
