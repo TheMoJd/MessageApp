@@ -3,7 +3,7 @@ package com.ubo.tp.message;
 import com.ubo.tp.message.core.EntityManager;
 import com.ubo.tp.message.core.database.Database;
 import com.ubo.tp.message.core.database.IDatabase;
-import com.ubo.tp.message.ihm.MessageApp;
+import com.ubo.tp.message.controller.MessageAppController;
 import com.ubo.tp.message.ihm.MessageAppMainView;
 import mock.MessageAppMock;
 
@@ -26,9 +26,6 @@ public class MessageAppLauncher {
 	 */
 	public static void main(String[] args) {
 
-		MessageAppMainView.initLookAndFeel();
-
-
 		IDatabase database = new Database();
 
 		EntityManager entityManager = new EntityManager(database);
@@ -38,7 +35,7 @@ public class MessageAppLauncher {
 			mock.showGUI();
 		}
 
-		MessageApp messageApp = new MessageApp(database, entityManager);
+		MessageAppController messageApp = new MessageAppController(database, entityManager);
 		messageApp.init();
 		messageApp.show();
 
