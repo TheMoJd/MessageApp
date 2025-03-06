@@ -12,13 +12,14 @@ import java.util.UUID;
 
 public class RegisterView extends JPanel implements IRegister {
     private final JTextField usernameField;
+    private final JTextField tagField; // Nouveau champ pour le tag
     private final JPasswordField passwordField;
     private final JPasswordField confirmPasswordField;
     private final JButton registerButton;
     private final List<IRegisterObserver> observers = new ArrayList<>();
 
     public RegisterView() {
-        setPreferredSize(new Dimension(400, 300));
+        setPreferredSize(new Dimension(400, 350));
         setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
@@ -41,8 +42,16 @@ public class RegisterView extends JPanel implements IRegister {
         gbc.gridx = 1;
         add(usernameField, gbc);
 
-        // Champ Mot de passe
+        // Champ Tag (@ identifiant unique)
         gbc.gridy = 2;
+        gbc.gridx = 0;
+        add(new JLabel("Tag (@tag) :"), gbc);
+        tagField = new JTextField(15);
+        gbc.gridx = 1;
+        add(tagField, gbc);
+
+        // Champ Mot de passe
+        gbc.gridy = 3;
         gbc.gridx = 0;
         add(new JLabel("Mot de passe:"), gbc);
         passwordField = new JPasswordField(15);
@@ -50,7 +59,7 @@ public class RegisterView extends JPanel implements IRegister {
         add(passwordField, gbc);
 
         // Champ Confirmer mot de passe
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridx = 0;
         add(new JLabel("Confirmer mot de passe:"), gbc);
         confirmPasswordField = new JPasswordField(15);
@@ -58,8 +67,8 @@ public class RegisterView extends JPanel implements IRegister {
         add(confirmPasswordField, gbc);
 
         // Bouton Enregistrer
-        registerButton = new JButton("Créer compte");
-        gbc.gridy = 4;
+        registerButton = new JButton("Créer un compte");
+        gbc.gridy = 5;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         add(registerButton, gbc);
@@ -68,9 +77,12 @@ public class RegisterView extends JPanel implements IRegister {
         registerButton.addActionListener(e -> {
             if (validateFields()) {
                 String username = usernameField.getText().trim();
+                String tag = tagField.getText().trim();
                 String password = new String(passwordField.getPassword());
+
                 // Création d'un utilisateur avec un UUID généré aléatoirement
-                User newUser = new User(UUID.randomUUID(), null, password, username, new java.util.HashSet<>(), "");
+                User newUser = new User(UUID.randomUUID(), tag, password, username, new java.util.HashSet<>(), "");
+
                 // Notifier les observateurs de la demande d'enregistrement
                 registerAccount(newUser);
             }
@@ -78,22 +90,35 @@ public class RegisterView extends JPanel implements IRegister {
     }
 
     /**
-     * Valide que tous les champs sont remplis et que les mots de passe correspondent.
+     * Vérifie que les champs sont remplis et valides.
      */
     private boolean validateFields() {
         String username = usernameField.getText().trim();
+        String tag = tagField.getText().trim();
         String password = new String(passwordField.getPassword());
         String confirmPassword = new String(confirmPasswordField.getPassword());
 
-        if (username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Veuillez remplir tous les champs.", "Erreur", JOptionPane.ERROR_MESSAGE);
+        if (username.isEmpty() || tag.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Tous les champs doivent être remplis.",
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
             return false;
         }
         if (!password.equals(confirmPassword)) {
-            JOptionPane.showMessageDialog(this, "Les mots de passe ne correspondent pas.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Les mots de passe ne correspondent pas.",
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
             return false;
         }
-        // Vous pouvez ajouter ici d'autres vérifications (longueur minimale, complexité, etc.)
+        if (!tag.matches("^@[a-zA-Z0-9_]{3,15}$")) {
+            JOptionPane.showMessageDialog(this,
+                    "Le tag doit commencer par '@' et contenir entre 3 et 15 caractères alphanumériques.",
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
         return true;
     }
 

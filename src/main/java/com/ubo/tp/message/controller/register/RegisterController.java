@@ -19,15 +19,33 @@ public class RegisterController implements IRegisterObserver {
 
     @Override
     public void notifyRegisterAccount(User newUser) {
-        // Vérifier si un utilisateur avec le même nom existe déjà
-        boolean exists = database.getUsers().stream()
+        // Vérifier si le nom d'utilisateur est déjà utilisé
+        boolean usernameExists = database.getUsers().stream()
                 .anyMatch(u -> u.getName().equalsIgnoreCase(newUser.getName()));
-        if (exists) {
-            JOptionPane.showMessageDialog(registerView, "Nom d'utilisateur déjà utilisé.", "Erreur", JOptionPane.ERROR_MESSAGE);
+
+        // Vérifier si le tag est déjà utilisé
+        boolean tagExists = database.getUsers().stream()
+                .anyMatch(u -> u.getUserTag().equalsIgnoreCase(newUser.getUserTag()));
+
+        if (usernameExists) {
+            JOptionPane.showMessageDialog(registerView,
+                    "Nom d'utilisateur déjà utilisé. Veuillez en choisir un autre.",
+                    "Erreur d'inscription",
+                    JOptionPane.ERROR_MESSAGE);
+        } else if (tagExists) {
+            JOptionPane.showMessageDialog(registerView,
+                    "Le tag " + newUser.getUserTag() + " est déjà pris. Veuillez en choisir un autre.",
+                    "Erreur d'inscription",
+                    JOptionPane.ERROR_MESSAGE);
         } else {
             // Ajouter l'utilisateur à la base de données
             database.addUser(newUser);
-            JOptionPane.showMessageDialog(registerView, "Compte créé avec succès.", "Succès", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(registerView,
+                    "Compte créé avec succès ! Bienvenue, " + newUser.getName() + " 🎉",
+                    "Inscription réussie",
+                    JOptionPane.INFORMATION_MESSAGE);
+            // Fermer la fenêtre après succès
+            SwingUtilities.getWindowAncestor(registerView).dispose();
         }
     }
 }

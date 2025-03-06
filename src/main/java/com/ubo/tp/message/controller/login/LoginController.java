@@ -6,6 +6,7 @@ import com.ubo.tp.message.datamodel.User;
 import com.ubo.tp.message.ihm.LoginView;
 import com.ubo.tp.message.ihm.RegisterFrame;
 
+import javax.swing.*;
 import java.util.Set;
 
 public class LoginController implements ILoginObserver {
@@ -23,8 +24,25 @@ public class LoginController implements ILoginObserver {
 
     @Override
     public void notifyLogin(User connectedUser) {
-        if (isCorrectUser(connectedUser)) {
-            session.connect(connectedUser);
+        User foundUser = database.getUsers().stream()
+                .filter(u -> u.getUserTag().equalsIgnoreCase(connectedUser.getUserTag()) &&
+                        u.getUserPassword().equals(connectedUser.getUserPassword()))
+                .findFirst()
+                .orElse(null);
+
+        if (foundUser != null) {
+            session.connect(foundUser);
+            JOptionPane.showMessageDialog(loginView,
+                    "Connexion réussie ! Bienvenue, " + foundUser.getName() + " 🎉",
+                    "Connexion réussie",
+                    JOptionPane.INFORMATION_MESSAGE);
+            // Fermer la fenêtre après une connexion réussie (optionnel)
+            SwingUtilities.getWindowAncestor(loginView).dispose();
+        } else {
+            JOptionPane.showMessageDialog(loginView,
+                    "Tag ou mot de passe incorrect.",
+                    "Erreur de connexion",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 

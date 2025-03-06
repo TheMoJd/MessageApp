@@ -6,29 +6,25 @@ import com.ubo.tp.message.datamodel.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class LoginView extends JPanel implements ILogin {
-    private final JTextField usernameField;
+    private final JTextField tagField; // Champ pour le tag (@tag)
     private final JPasswordField passwordField;
     private final JButton loginButton;
     private final JButton registerButton;
     private final List<ILoginObserver> observers = new ArrayList<>();
 
-    private User user;
-
     public LoginView() {
-        setSize(400, 250);
+        setPreferredSize(new Dimension(400, 250));
         setLayout(new GridBagLayout());
-
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel titleLabel = new JLabel("MessageApp - Connexion");
+        JLabel titleLabel = new JLabel("MessageApp - Connexion", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -38,11 +34,11 @@ public class LoginView extends JPanel implements ILogin {
         gbc.gridwidth = 1;
         gbc.gridy = 1;
         gbc.gridx = 0;
-        add(new JLabel("Nom d'utilisateur :"), gbc);
+        add(new JLabel("Tag (@tag) :"), gbc);
 
-        usernameField = new JTextField(15);
+        tagField = new JTextField(15);
         gbc.gridx = 1;
-        add(usernameField, gbc);
+        add(tagField, gbc);
 
         gbc.gridy = 2;
         gbc.gridx = 0;
@@ -56,7 +52,6 @@ public class LoginView extends JPanel implements ILogin {
         gbc.gridy = 3;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(loginButton, gbc);
 
         registerButton = new JButton("Inscription");
@@ -65,31 +60,38 @@ public class LoginView extends JPanel implements ILogin {
         gbc.gridwidth = 2;
         add(registerButton, gbc);
 
-        loginButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                user = new User(new UUID(0, 1), null, new String(passwordField.getPassword()), usernameField.getText(), null, null);
+        loginButton.addActionListener(e -> {
+            if (validateFields()) {
+                User user = new User(UUID.randomUUID(), tagField.getText().trim(), new String(passwordField.getPassword()), "", null, null);
                 login(user);
             }
         });
 
-        registerButton.addActionListener(e -> {
-            registerAction();
-        });
-
-        setVisible(true);
+        registerButton.addActionListener(e -> registerAction());
     }
 
-    public JTextField getUsernameField() {
-        return usernameField;
-    }
+    /**
+     * Vérifie que les champs ne sont pas vides avant d'envoyer les données.
+     */
+    private boolean validateFields() {
+        String tag = tagField.getText().trim();
+        String password = new String(passwordField.getPassword());
 
-    public JPasswordField getPasswordField() {
-        return passwordField;
-    }
-
-    public JButton getLoginButton() {
-        return loginButton;
+        if (tag.isEmpty() || password.isEmpty()) {
+            JOptionPane.showMessageDialog(this,
+                    "Veuillez remplir tous les champs.",
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (!tag.matches("^@[a-zA-Z0-9_]{3,15}$")) {
+            JOptionPane.showMessageDialog(this,
+                    "Le tag doit commencer par '@' et contenir entre 3 et 15 caractères alphanumériques.",
+                    "Erreur",
+                    JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        return true;
     }
 
     @Override
