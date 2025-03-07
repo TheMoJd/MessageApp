@@ -1,5 +1,6 @@
 package com.ubo.tp.message.controller.login;
 
+import com.ubo.tp.message.core.session.ISessionObserver;
 import com.ubo.tp.message.datamodel.User;
 
 public interface ILogin {
@@ -19,6 +20,4 @@ public interface ILogin {
     void removeObserver(ILoginObserver observer);
 
     void login(User connectedUser);
-
-    void registerAction();
 }

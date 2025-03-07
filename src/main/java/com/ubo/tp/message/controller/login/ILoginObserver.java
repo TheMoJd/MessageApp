@@ -6,5 +6,4 @@ public interface ILoginObserver {
 
     void notifyLogin(User connectedUser);
 
-    void notifyRegister();
 }

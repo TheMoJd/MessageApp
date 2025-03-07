@@ -11,20 +11,22 @@ import java.util.List;
 import java.util.UUID;
 
 public class LoginView extends JPanel implements ILogin {
-    private final JTextField tagField; // Champ pour le tag (@tag)
+    private final JTextField tagField;
     private final JPasswordField passwordField;
     private final JButton loginButton;
-    private final JButton registerButton;
     private final List<ILoginObserver> observers = new ArrayList<>();
+    private final JLabel errorLabel;
+
+    private User user;
 
     public LoginView() {
-        setPreferredSize(new Dimension(400, 250));
+        setSize(400, 250);
         setLayout(new GridBagLayout());
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel titleLabel = new JLabel("MessageApp - Connexion", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("MessageApp - Connexion");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -34,7 +36,7 @@ public class LoginView extends JPanel implements ILogin {
         gbc.gridwidth = 1;
         gbc.gridy = 1;
         gbc.gridx = 0;
-        add(new JLabel("Tag (@tag) :"), gbc);
+        add(new JLabel("Nom d'utilisateur :"), gbc);
 
         tagField = new JTextField(15);
         gbc.gridx = 1;
@@ -52,46 +54,42 @@ public class LoginView extends JPanel implements ILogin {
         gbc.gridy = 3;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         add(loginButton, gbc);
 
-        registerButton = new JButton("Inscription");
+        errorLabel = new JLabel();
+        errorLabel.setForeground(Color.RED);
         gbc.gridy = 4;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
-        add(registerButton, gbc);
+        add(errorLabel, gbc);
 
         loginButton.addActionListener(e -> {
-            if (validateFields()) {
-                User user = new User(UUID.randomUUID(), tagField.getText().trim(), new String(passwordField.getPassword()), "", null, null);
-                login(user);
-            }
+            user = new User(UUID.randomUUID(),  tagField.getText(), new String(passwordField.getPassword()), null, null, null);
+            login(user);
         });
 
-        registerButton.addActionListener(e -> registerAction());
+        setVisible(true);
     }
 
-    /**
-     * Vérifie que les champs ne sont pas vides avant d'envoyer les données.
-     */
-    private boolean validateFields() {
-        String tag = tagField.getText().trim();
-        String password = new String(passwordField.getPassword());
+    public JTextField getTagField() {
+        return tagField;
+    }
 
-        if (tag.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Veuillez remplir tous les champs.",
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        if (!tag.matches("^@[a-zA-Z0-9_]{3,15}$")) {
-            JOptionPane.showMessageDialog(this,
-                    "Le tag doit commencer par '@' et contenir entre 3 et 15 caractères alphanumériques.",
-                    "Erreur",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
-        }
-        return true;
+    public JPasswordField getPasswordField() {
+        return passwordField;
+    }
+
+    public JButton getLoginButton() {
+        return loginButton;
+    }
+
+    public void removeError() {
+        errorLabel.setText("");
+    }
+
+    public void setError(String error) {
+        errorLabel.setText(error);
     }
 
     @Override
@@ -108,13 +106,6 @@ public class LoginView extends JPanel implements ILogin {
     public void login(User connectedUser) {
         for (ILoginObserver observer : observers) {
             observer.notifyLogin(connectedUser);
-        }
-    }
-
-    @Override
-    public void registerAction() {
-        for (ILoginObserver observer : observers) {
-            observer.notifyRegister();
         }
     }
 }

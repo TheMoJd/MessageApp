@@ -1,51 +1,56 @@
 package com.ubo.tp.message.controller.register;
 
 import com.ubo.tp.message.core.database.IDatabase;
+import com.ubo.tp.message.core.session.Session;
 import com.ubo.tp.message.datamodel.User;
 import com.ubo.tp.message.ihm.RegisterView;
 
-import javax.swing.*;
+import java.util.UUID;
 
 public class RegisterController implements IRegisterObserver {
+
     private final RegisterView registerView;
     private final IDatabase database;
+    private final Session session;
 
-    public RegisterController(RegisterView registerView, IDatabase database) {
-        this.registerView = registerView;
+    public RegisterController(IDatabase database, Session session) {
+        this.registerView = new RegisterView();
         this.database = database;
-        // Inscription du contrôleur en tant qu'observateur de la vue
-        this.registerView.addObserver(this);
+        this.session = session;
+        registerView.addObserver(this);
     }
 
     @Override
-    public void notifyRegisterAccount(User newUser) {
-        // Vérifier si le nom d'utilisateur est déjà utilisé
-        boolean usernameExists = database.getUsers().stream()
-                .anyMatch(u -> u.getName().equalsIgnoreCase(newUser.getName()));
-
-        // Vérifier si le tag est déjà utilisé
-        boolean tagExists = database.getUsers().stream()
-                .anyMatch(u -> u.getUserTag().equalsIgnoreCase(newUser.getUserTag()));
-
-        if (usernameExists) {
-            JOptionPane.showMessageDialog(registerView,
-                    "Nom d'utilisateur déjà utilisé. Veuillez en choisir un autre.",
-                    "Erreur d'inscription",
-                    JOptionPane.ERROR_MESSAGE);
-        } else if (tagExists) {
-            JOptionPane.showMessageDialog(registerView,
-                    "Le tag " + newUser.getUserTag() + " est déjà pris. Veuillez en choisir un autre.",
-                    "Erreur d'inscription",
-                    JOptionPane.ERROR_MESSAGE);
-        } else {
-            // Ajouter l'utilisateur à la base de données
-            database.addUser(newUser);
-            JOptionPane.showMessageDialog(registerView,
-                    "Compte créé avec succès ! Bienvenue, " + newUser.getName() + " 🎉",
-                    "Inscription réussie",
-                    JOptionPane.INFORMATION_MESSAGE);
-            // Fermer la fenêtre après succès
-            SwingUtilities.getWindowAncestor(registerView).dispose();
+    public void notifyRegister(User createdUser, String confirmPassword) {
+        if (!isPasswordValid(createdUser.getUserPassword(), confirmPassword)) {
+            registerView.setError("Les mots de passe ne correspondent pas");
+            return;
         }
+
+        if (!isUniqueUser(createdUser)) {
+            registerView.setError("Utilisateur déjà existant");
+            return;
+        }
+
+        User newUser = createUser(createdUser);
+        session.connect(newUser);
+    }
+
+    public RegisterView getRegisterView() {
+        return registerView;
+    }
+
+    private boolean isUniqueUser(User user) {
+        return database.getUsers().stream().noneMatch(u -> u.getName().equals(user.getName()));
+    }
+
+    private boolean isPasswordValid(String password1, String password2) {
+        return password1.equals(password2);
+    }
+
+    private User createUser(User user) {
+        User newUser = new User(UUID.randomUUID(), user.getUserTag(), user.getUserPassword(), user.getName(), user.getFollows(), user.getAvatarPath());
+        database.addUser(newUser);
+        return newUser;
     }
 }

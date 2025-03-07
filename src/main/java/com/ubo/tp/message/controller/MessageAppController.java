@@ -2,27 +2,28 @@ package com.ubo.tp.message.controller;
 
 import java.io.File;
 
+import com.ubo.tp.message.action.IActionObserver;
+import com.ubo.tp.message.config.ConfigManager;
+import com.ubo.tp.message.controller.login.LoginController;
+import com.ubo.tp.message.controller.register.RegisterController;
+import com.ubo.tp.message.controller.user.UserController;
 import com.ubo.tp.message.core.EntityManager;
 import com.ubo.tp.message.core.database.IDatabase;
+import com.ubo.tp.message.core.database.IDatabaseObserver;
 import com.ubo.tp.message.core.directory.IWatchableDirectory;
 import com.ubo.tp.message.core.directory.WatchableDirectory;
-import com.ubo.tp.message.ihm.MessageAppMainView;
-
-import com.ubo.tp.message.controller.login.LoginController;
-import com.ubo.tp.message.core.database.IDatabaseObserver;
 import com.ubo.tp.message.core.session.ISessionObserver;
 import com.ubo.tp.message.core.session.Session;
 import com.ubo.tp.message.datamodel.Message;
 import com.ubo.tp.message.datamodel.User;
-import com.ubo.tp.message.ihm.FileChooserView;
-import com.ubo.tp.message.ihm.LoginView;
+import com.ubo.tp.message.ihm.*;
 
 /**
  * Classe principale l'application.
  *
  * @author S.Lucas
  */
-public class MessageAppController implements IDatabaseObserver, ISessionObserver {
+public class MessageAppController implements IDatabaseObserver, ISessionObserver, IActionObserver {
 	/**
 	 * Base de données.
 	 */
@@ -55,6 +56,10 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 
 	protected LoginController mLoginController;
 
+	protected RegisterController mRegisterController;
+
+	protected UserController mUserController;
+
 	protected Session mSession;
 
 	/**
@@ -67,7 +72,11 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 		this.mDatabase = database;
 		this.mEntityManager = entityManager;
 		this.mSession = new Session();
-		mLoginController = new LoginController(new LoginView(), database, mSession);
+
+		mLoginController = new LoginController(database, mSession);
+		mRegisterController = new RegisterController(database, mSession);
+		mUserController = new UserController(database, mSession);
+
 		mSession.addObserver(this);
 		database.addObserver(this);
 	}
@@ -76,10 +85,13 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	 * Initialisation de l'application.
 	 */
 	public void init() {
+		// Init du look and feel de l'application
 		this.initLookAndFeel();
 
+		// Initialisation de l'IHM
 		this.initGui();
 
+		// Initialisation du répertoire d'échange
 		this.initDirectory();
 	}
 
@@ -94,10 +106,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	 */
 	protected void initGui() {
 		this.mMainView = new MessageAppMainView();
-
-		if (mLoginController.getSession().getConnectedUser() == null) {
-			mMainView.addLoginPane(mLoginController.getLoginView());
-		}
+		this.mMainView.addObserver(this);
 	}
 
 	protected void exit() {
@@ -111,18 +120,20 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	 * pouvoir utiliser l'application</b>
 	 */
 	protected void initDirectory() {
-		if (mExchangeDirectoryPath == null) {
+		mExchangeDirectoryPath = ConfigManager.getProperty("EXCHANGE_DIRECTORY");
+
+		if (mExchangeDirectoryPath == null || mExchangeDirectoryPath.isEmpty()) {
 
 			FileChooserView fileChooserView = new FileChooserView();
-
 			File selectedDirectory = fileChooserView.getSelectedDirectory();
 
 			if (isValideExchangeDirectory(selectedDirectory)) {
-				initDirectory(selectedDirectory.getAbsolutePath());
+				ConfigManager.setProperty("EXCHANGE_DIRECTORY", selectedDirectory.getAbsolutePath());
 			}
 		}
 
-		System.out.println("Exchange directory : " + mExchangeDirectoryPath);
+		initDirectory(ConfigManager.getProperty("EXCHANGE_DIRECTORY"));
+
 	}
 
 	/**
@@ -142,11 +153,11 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	 * @param directoryPath
 	 */
 	protected void initDirectory(String directoryPath) {
-		this.mExchangeDirectoryPath = directoryPath;
-		this.mWatchableDirectory = new WatchableDirectory(directoryPath);
-		this.mEntityManager.setExchangeDirectory(directoryPath);
+		mExchangeDirectoryPath = directoryPath;
+		mWatchableDirectory = new WatchableDirectory(directoryPath);
+		mEntityManager.setExchangeDirectory(directoryPath);
 
-		this.mWatchableDirectory.initWatching();
+		mWatchableDirectory.initWatching();
 		mWatchableDirectory.addObserver(mEntityManager);
 	}
 
@@ -188,16 +199,47 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 
 	@Override
 	public void notifyLogin(User connectedUser) {
-		System.out.println(connectedUser.getName() + " connected!");
-		mMainView.removeLoginPane(mLoginController.getLoginView());
+		mMainView.removeView();
+		mMainView.getNavBar().addProfilButton();
+		mMainView.getNavBar().addUsersButton();
+		mMainView.getNavBar().addLogoutButton();
 	}
 
 	@Override
 	public void notifyLogout() {
-
+		mMainView.getNavBar().removeLogoutButton();
+		mMainView.getNavBar().removeProfilButton();
+		mMainView.getNavBar().removeUsersButton();
+		mMainView.removeView();
 	}
 
-	public Session getmSession() {
-		return mSession;
+	@Override
+	public void notifyLoginAction() {
+		mMainView.addView(mLoginController.getLoginView());
+	}
+
+	@Override
+	public void notifyExitAction() {
+	}
+
+	@Override
+	public void notifyRegisterAction() {
+		mMainView.addView(mRegisterController.getRegisterView());
+	}
+
+	@Override
+	public void notifyDisconnectAction() {
+		mSession.disconnect();
+	}
+
+	@Override
+	public void notifyProfileAction() {
+		mMainView.addView(new UserProfileView(mSession.getConnectedUser()));
+	}
+
+	@Override
+	public void notifyListUsersAction() {
+		mUserController.getListUsersView().listUsers();
+		mMainView.addView(mUserController.getListUsersView());
 	}
 }

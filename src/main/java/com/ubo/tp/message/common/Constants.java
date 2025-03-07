@@ -62,4 +62,7 @@ public class Constants {
 	 * Clé de configuration pour le mode bouchoné
 	 */
 	public static final String CONFIGURATION_KEY_MOCK_ENABLED = "MOCK_ENABLED";
+
+	public static final String AVATAR_PATH = "src/main/resources/images/avatar(pas-le-film).png";
+
 }

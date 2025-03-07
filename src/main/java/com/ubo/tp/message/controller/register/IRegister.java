@@ -2,11 +2,21 @@ package com.ubo.tp.message.controller.register;
 
 import com.ubo.tp.message.datamodel.User;
 
-/**
- * Interface définissant les opérations de création de compte.
- */
 public interface IRegister {
+
+    /**
+     * Ajoute un observateur à la session.
+     *
+     * @param observer
+     */
     void addObserver(IRegisterObserver observer);
+
+    /**
+     * Retire un observateur à la session.
+     *
+     * @param observer
+     */
     void removeObserver(IRegisterObserver observer);
-    void registerAccount(User newUser);
+
+    void register(User createdUser, String confirmPassword);
 }
