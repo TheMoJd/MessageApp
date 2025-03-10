@@ -11,7 +11,7 @@ public class NavBarView extends JPanel {
     private final JButton logoutButton;
     private final JButton profilButton;
     private final JButton usersButton;
-
+    private final JButton messagesButton;
 
     public NavBarView() {
         setLayout(new BorderLayout());
@@ -24,6 +24,7 @@ public class NavBarView extends JPanel {
         logoutButton = new JButton("Déconnexion");
         profilButton = new JButton("Profil");
         usersButton = new JButton("Utilisateurs");
+        messagesButton = new JButton("Messages");
 
         // Ajout des éléments à la navbar
         add(logoLabel, BorderLayout.WEST);
@@ -42,6 +43,10 @@ public class NavBarView extends JPanel {
 
     public JButton getUsersButton() {
         return usersButton;
+    }
+
+    public JButton getMessagesButton() {
+        return messagesButton;
     }
 
     public void removeLogoutButton() {
@@ -67,4 +72,12 @@ public class NavBarView extends JPanel {
     public void removeUsersButton() {
         this.buttonPanel.remove(usersButton);
     }
+
+    public void addMessageButton() {
+        this.buttonPanel.add(messagesButton);
+    }
+
+    public void removeMessageButton() {
+    this.buttonPanel.remove(messagesButton);
+  }
 }

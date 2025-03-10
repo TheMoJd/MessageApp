@@ -80,7 +80,7 @@ public class DataFilesManager {
 	/**
 	 * Lecture du fichier de propriété pour un {@link User}
 	 *
-	 * @param userFileName
+	 * @param userFile userFileName
 	 */
 	public static User readUser(File userFile) {
 		User user = null;
@@ -90,7 +90,7 @@ public class DataFilesManager {
 
 			String uuid = properties.getProperty(PROPERTY_KEY_USER_UUID, UUID.randomUUID().toString());
 			String tag = properties.getProperty(PROPERTY_KEY_USER_TAG, "NoTag");
-			String password = decrypt(properties.getProperty(PROPERTY_KEY_USER_PASSWORD, "NoPassword"));
+			String password = properties.getProperty(PROPERTY_KEY_USER_PASSWORD, "NoPassword");
 			String name = properties.getProperty(PROPERTY_KEY_USER_NAME, "NoName");
 			String follows = properties.getProperty(PROPERTY_KEY_USER_FOLLOWS, "");
 			String avatar = properties.getProperty(PROPERTY_KEY_USER_AVATAR, "");

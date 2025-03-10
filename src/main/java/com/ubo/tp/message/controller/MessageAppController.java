@@ -5,6 +5,7 @@ import java.io.File;
 import com.ubo.tp.message.action.IActionObserver;
 import com.ubo.tp.message.config.ConfigManager;
 import com.ubo.tp.message.controller.login.LoginController;
+import com.ubo.tp.message.controller.message.MessageController;
 import com.ubo.tp.message.controller.register.RegisterController;
 import com.ubo.tp.message.controller.user.UserController;
 import com.ubo.tp.message.core.EntityManager;
@@ -60,6 +61,8 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 
 	protected UserController mUserController;
 
+	protected MessageController mMessageController;
+
 	protected Session mSession;
 
 	/**
@@ -76,6 +79,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 		mLoginController = new LoginController(database, mSession);
 		mRegisterController = new RegisterController(database, mSession);
 		mUserController = new UserController(database, mSession);
+		mMessageController = new MessageController(database, mSession);
 
 		mSession.addObserver(this);
 		database.addObserver(this);
@@ -203,6 +207,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 		mMainView.getNavBar().addProfilButton();
 		mMainView.getNavBar().addUsersButton();
 		mMainView.getNavBar().addLogoutButton();
+		mMainView.getNavBar().addMessageButton();
 	}
 
 	@Override
@@ -210,6 +215,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 		mMainView.getNavBar().removeLogoutButton();
 		mMainView.getNavBar().removeProfilButton();
 		mMainView.getNavBar().removeUsersButton();
+		mMainView.getNavBar().removeMessageButton();
 		mMainView.removeView();
 		mMainView.addView(mMainView.getCenterPanel());
 	}
@@ -244,5 +250,10 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	public void notifyListUsersAction() {
 		mUserController.getListUsersView().listUsers();
 		mMainView.addView(mUserController.getListUsersView());
+	}
+
+	@Override
+	public void notifyListMessageAction() {
+		mMainView.addView(mMessageController.getMessageListView());
 	}
 }

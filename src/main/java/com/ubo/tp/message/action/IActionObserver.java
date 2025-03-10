@@ -13,4 +13,6 @@ public interface IActionObserver {
     void notifyProfileAction();
 
     void notifyListUsersAction();
+
+    void notifyListMessageAction();
 }
