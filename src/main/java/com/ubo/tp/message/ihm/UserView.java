@@ -17,8 +17,7 @@ public class UserView extends JPanel implements IUser {
     private JLabel avatarLabel;
     private JLabel tagLabel;
     private JLabel nameLabel;
-    private JButton followButton;
-    private JButton unfollowButton;
+    private JButton followButton; // Bouton unique de suivi
     private final List<IUserObserver> observers = new ArrayList<>();
 
     public UserView(User user, UserController userController) {
@@ -44,8 +43,9 @@ public class UserView extends JPanel implements IUser {
         nameLabel = new JLabel(user.getName());
         nameLabel.setFont(new Font("Arial", Font.BOLD, 16));
 
-        followButton = new JButton("Suivre");
-        unfollowButton = new JButton("Ne plus suivre");
+        // Bouton de suivi unique
+        followButton = new JButton();
+        updateFollowButtonLabel();
 
         add(avatarLabel, new GridBagConstraints(
                 0, 0, 1, 2, 0, 0,
@@ -62,13 +62,30 @@ public class UserView extends JPanel implements IUser {
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
                 new Insets(0, 5, 5, 5), 0, 0));
 
-        addFollowButton();
-        addUnfollowButton();
+        add(followButton, new GridBagConstraints(
+                2, 0, 1, 2, 0, 0,
+                GridBagConstraints.EAST, GridBagConstraints.NONE,
+                new Insets(10, 10, 10, 10), 0, 0));
     }
 
     private void manageAction() {
-        followButton.addActionListener(e -> follow(user));
-        unfollowButton.addActionListener(e -> unFollow(user));
+        followButton.addActionListener(e -> {
+            // Si l'utilisateur est suivi, le désabonner, sinon l'abonner
+            if (userController.isFollowing(user)) {
+                unFollow(user);
+            } else {
+                follow(user);
+            }
+            updateFollowButtonLabel();
+        });
+    }
+
+    private void updateFollowButtonLabel() {
+        if (userController.isFollowing(user)) {
+            followButton.setText("Ne plus suivre");
+        } else {
+            followButton.setText("Suivre");
+        }
     }
 
     @Override
@@ -83,6 +100,7 @@ public class UserView extends JPanel implements IUser {
 
     @Override
     public void listUsers() {
+        // Pas d'action ici dans ce contexte
     }
 
     @Override
@@ -97,27 +115,5 @@ public class UserView extends JPanel implements IUser {
         for (IUserObserver observer : observers) {
             observer.notifyUnFollow(user);
         }
-    }
-
-    public void addFollowButton() {
-        add(followButton, new GridBagConstraints(
-                2, 0, 1, 2, 0, 0,
-                GridBagConstraints.EAST, GridBagConstraints.NONE,
-                new Insets(10, 10, 10, 10), 0, 0));
-    }
-
-    public void removeFollowButton() {
-        remove(followButton);
-    }
-
-    public void addUnfollowButton() {
-        add(unfollowButton, new GridBagConstraints(
-                3, 0, 1, 2, 0, 0,
-                GridBagConstraints.EAST, GridBagConstraints.NONE,
-                new Insets(10, 10, 10, 10), 0, 0));
-    }
-
-    public void removeUnfollowButton() {
-        remove(unfollowButton);
     }
 }

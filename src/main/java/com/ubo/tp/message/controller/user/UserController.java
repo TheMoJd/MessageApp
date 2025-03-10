@@ -54,7 +54,7 @@ public class UserController implements IUserObserver {
         return listUsersView;
     }
 
-    private boolean isFollowing(User user) {
+    public boolean isFollowing(User user) {
         User currentUser = session.getConnectedUser();
         return currentUser.getFollows().contains(user.getUserTag());
     }
