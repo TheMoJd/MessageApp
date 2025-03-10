@@ -63,6 +63,6 @@ public class Constants {
 	 */
 	public static final String CONFIGURATION_KEY_MOCK_ENABLED = "MOCK_ENABLED";
 
-	public static final String AVATAR_PATH = "src/main/resources/images/avatar(pas-le-film).png";
+	public static final String AVATAR_PATH = "src/main/resources/images/avatar.jpg";
 
 }
