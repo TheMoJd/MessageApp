@@ -15,13 +15,11 @@ public class NavBarView extends JPanel {
 
     public NavBarView() {
         setLayout(new BorderLayout());
-        setPreferredSize(new Dimension(1024, 50)); // Hauteur fixe
+        setPreferredSize(new Dimension(1024, 50));
 
-        // Logo (à gauche)
         JLabel logoLabel = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("images/logo_50.png"))));
-        logoLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10)); // Espacement
+        logoLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
 
-        // Panel pour les boutons (à droite)
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         logoutButton = new JButton("Déconnexion");
         profilButton = new JButton("Profil");
