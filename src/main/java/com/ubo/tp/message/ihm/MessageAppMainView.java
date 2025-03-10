@@ -103,8 +103,7 @@ public class MessageAppMainView extends JFrame implements IAction {
         navBar.getLogoutButton().addActionListener(e -> disconnectAction());
         navBar.getProfilButton().addActionListener(e -> profileAction());
         navBar.getUsersButton().addActionListener(e -> listUsersAction());
-
-    }
+        }
 
 
     public void removeView() {
@@ -174,5 +173,9 @@ public class MessageAppMainView extends JFrame implements IAction {
 
     public NavBarView getNavBar() {
         return navBar;
+    }
+
+    public JPanel getCenterPanel() {
+        return centerPanel;
     }
 }

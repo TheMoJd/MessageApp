@@ -211,6 +211,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 		mMainView.getNavBar().removeProfilButton();
 		mMainView.getNavBar().removeUsersButton();
 		mMainView.removeView();
+		mMainView.addView(mMainView.getCenterPanel());
 	}
 
 	@Override
