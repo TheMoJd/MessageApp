@@ -6,6 +6,7 @@ import com.ubo.tp.message.datamodel.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,13 +15,14 @@ public class LoginView extends JPanel implements ILogin {
     private final JTextField tagField;
     private final JPasswordField passwordField;
     private final JButton loginButton;
+    private final JButton registerButton; // Nouveau bouton pour inscription
     private final List<ILoginObserver> observers = new ArrayList<>();
     private final JLabel errorLabel;
 
     private User user;
 
     public LoginView() {
-        setSize(400, 250);
+        setSize(400, 300);
         setLayout(new GridBagLayout());
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -57,19 +59,37 @@ public class LoginView extends JPanel implements ILogin {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(loginButton, gbc);
 
+        registerButton = new JButton("Inscription");
+        GridBagConstraints gbcRegister = new GridBagConstraints();
+        gbcRegister.insets = new Insets(10, 10, 10, 10);
+        gbcRegister.gridx = 0;
+        gbcRegister.gridy = 4;
+        gbcRegister.gridwidth = 2;
+        gbcRegister.fill = GridBagConstraints.HORIZONTAL;
+        add(registerButton, gbcRegister);
+
+        // Label d'erreur, placé sur une nouvelle ligne
         errorLabel = new JLabel();
         errorLabel.setForeground(Color.RED);
-        gbc.gridy = 4;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        add(errorLabel, gbc);
+        GridBagConstraints gbcError = new GridBagConstraints();
+        gbcError.insets = new Insets(10, 10, 10, 10);
+        gbcError.gridy = 5;
+        gbcError.gridx = 0;
+        gbcError.gridwidth = 2;
+        add(errorLabel, gbcError);
 
+        // Action listener pour le bouton connexion
         loginButton.addActionListener(e -> {
-            user = new User(UUID.randomUUID(),  tagField.getText(), new String(passwordField.getPassword()), null, null, null);
+            user = new User(UUID.randomUUID(), tagField.getText(), new String(passwordField.getPassword()), null, null, null);
             login(user);
         });
 
         setVisible(true);
+    }
+
+    // Méthode permettant d'ajouter un écouteur sur le bouton inscription
+    public void addRegisterListener(ActionListener listener) {
+        registerButton.addActionListener(listener);
     }
 
     public JTextField getTagField() {

@@ -217,6 +217,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	@Override
 	public void notifyLoginAction() {
 		mMainView.addView(mLoginController.getLoginView());
+		mLoginController.getLoginView().addRegisterListener(e -> notifyRegisterAction());
 	}
 
 	@Override
@@ -226,6 +227,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	@Override
 	public void notifyRegisterAction() {
 		mMainView.addView(mRegisterController.getRegisterView());
+		mRegisterController.getRegisterView().addLoginListener(e -> notifyLoginAction());
 	}
 
 	@Override

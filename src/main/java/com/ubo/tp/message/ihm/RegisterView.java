@@ -6,6 +6,7 @@ import com.ubo.tp.message.datamodel.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +17,7 @@ public class RegisterView extends JPanel implements IRegister {
     private final JPasswordField passwordField;
     private final JPasswordField confirmPasswordField;
     private final JButton registerButton;
+    private final JButton loginButton;
     private final JLabel errorLabel;
 
     private final List<IRegisterObserver> observers = new ArrayList<>();
@@ -81,6 +83,14 @@ public class RegisterView extends JPanel implements IRegister {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         add(registerButton, gbc);
 
+        // Bouton connexion
+        loginButton = new JButton("Connexion");
+        gbc.gridy = 6;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(loginButton, gbc);
+
         errorLabel = new JLabel();
         errorLabel.setForeground(Color.RED);
         gbc.gridy = 6;
@@ -90,6 +100,11 @@ public class RegisterView extends JPanel implements IRegister {
 
         setVisible(true);
         manageAction();
+    }
+
+    // Méthode permettant d'ajouter un écouteur sur le bouton inscription
+    public void addLoginListener(ActionListener listener) {
+        loginButton.addActionListener(listener);
     }
 
     private void manageAction() {
