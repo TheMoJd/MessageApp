@@ -1,5 +1,6 @@
 package com.ubo.tp.message.controller.register;
 
+import com.ubo.tp.message.core.EntityManager;
 import com.ubo.tp.message.core.database.IDatabase;
 import com.ubo.tp.message.core.session.Session;
 import com.ubo.tp.message.datamodel.User;
@@ -12,11 +13,13 @@ public class RegisterController implements IRegisterObserver {
     private final RegisterView registerView;
     private final IDatabase database;
     private final Session session;
+    private final EntityManager entityManager;
 
-    public RegisterController(IDatabase database, Session session) {
+    public RegisterController(IDatabase database, Session session, EntityManager entityManager) {
         this.registerView = new RegisterView();
         this.database = database;
         this.session = session;
+        this.entityManager = entityManager;
         registerView.addObserver(this);
     }
 
@@ -51,6 +54,7 @@ public class RegisterController implements IRegisterObserver {
     private User createUser(User user) {
         User newUser = new User(UUID.randomUUID(), user.getUserTag(), user.getUserPassword(), user.getName(), user.getFollows(), user.getAvatarPath());
         database.addUser(newUser);
+        entityManager.writeUserFile(newUser);
         return newUser;
     }
 }

@@ -77,9 +77,9 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 		this.mSession = new Session();
 
 		mLoginController = new LoginController(database, mSession);
-		mRegisterController = new RegisterController(database, mSession);
+		mRegisterController = new RegisterController(database, mSession, entityManager);
 		mUserController = new UserController(database, mSession);
-		mMessageController = new MessageController(database, mSession);
+		mMessageController = new MessageController(database, mSession, entityManager);
 
 		mSession.addObserver(this);
 		database.addObserver(this);
@@ -174,6 +174,9 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	@Override
 	public void notifyMessageAdded(Message message) {
 		System.out.println("Nouveau message ajouté : " + message.getText());
+		if (mSession.getConnectedUser() != null) {
+			mMessageController.getMessageListView().refreshView(mDatabase.getMessages());
+		}
 	}
 
 	@Override
@@ -255,5 +258,6 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 	@Override
 	public void notifyListMessageAction() {
 		mMainView.addView(mMessageController.getMessageListView());
+		mMessageController.getMessageListView().refreshView(mDatabase.getMessages());
 	}
 }

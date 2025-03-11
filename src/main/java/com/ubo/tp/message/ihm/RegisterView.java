@@ -109,7 +109,7 @@ public class RegisterView extends JPanel implements IRegister {
 
     private void manageAction() {
         registerButton.addActionListener(e -> {
-            User user = new User(null, tagField.getText(), new String(passwordField.getPassword()), nameField.getText(), new HashSet<>(), null);
+            User user = new User(null, tagField.getText(), new String(passwordField.getPassword()), nameField.getText(), new HashSet<>(), "");
             register(user, new String(confirmPasswordField.getPassword()));
         });
     }

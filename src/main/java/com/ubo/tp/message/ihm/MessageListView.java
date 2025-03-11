@@ -9,22 +9,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 public class MessageListView extends JPanel implements IMessage {
 
   private ISession session;
-  private Set<Message> messages;
   protected JPanel messagesPanel;
   protected long dateTime;
   private JTextField messageField;
   private JButton sendButton;
+  private List<IMessageObserver> observers;
 
-  public MessageListView(ISession session) {
+  public MessageListView(ISession session, Set<Message> messages) {
     this.session = session;
-    messages = new HashSet<>();
+    observers = new ArrayList<>();
     setLayout(new BorderLayout());
     messagesPanel = new JPanel();
     messagesPanel.setLayout(new BoxLayout(messagesPanel, BoxLayout.Y_AXIS));
@@ -45,20 +44,20 @@ public class MessageListView extends JPanel implements IMessage {
         String messageText = messageField.getText();
         if (!messageText.isEmpty()) {
           Message message = new Message(session.getConnectedUser(), messageText);
-          messages.add(message);
+          for (IMessageObserver observer : observers) {
+            observer.notifyMessage(message);
+          }
           messageField.setText("");
-          refreshView();
         }
       }
     });
-
     this.updateDateTime();
     this.setVisible(true);
   }
 
-  public void refreshView() {
+  public void refreshView(Set<Message> messages) {
     messagesPanel.removeAll();
-    Set<Message> messagesSorted = new HashSet<>(messages);
+    Set<Message> messagesSorted = new TreeSet<>((msg1, msg2) -> Long.compare(msg2.getEmissionDate(), msg1.getEmissionDate()));
     messagesSorted.addAll(messages);
     for (Message message : messagesSorted) {
       boolean userMessage = message.getSender().getUserTag().equals(session.getConnectedUser().getUserTag());
@@ -74,8 +73,16 @@ public class MessageListView extends JPanel implements IMessage {
   }
 
   @Override
+  public void addObserver(IMessageObserver observer) {
+    observers.add(observer);
+  }
+
+  @Override
+  public void removeObserver(IMessageObserver observer) {
+    observers.remove(observer);
+  }
+
+  @Override
   public void listMessagesChanged(Set<Message> referenceList) {
-    this.messages = referenceList;
-    this.refreshView();
   }
 }

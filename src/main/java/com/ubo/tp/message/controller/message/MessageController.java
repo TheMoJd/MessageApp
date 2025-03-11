@@ -1,5 +1,6 @@
 package com.ubo.tp.message.controller.message;
 
+import com.ubo.tp.message.core.EntityManager;
 import com.ubo.tp.message.core.database.IDatabase;
 import com.ubo.tp.message.core.session.Session;
 import com.ubo.tp.message.datamodel.Message;
@@ -13,10 +14,14 @@ public class MessageController implements IMessageObserver {
 
   Session session;
 
-  public MessageController(IDatabase database, Session session) {
-    this.messageListView = new MessageListView(session);
+  private EntityManager mEntityManager;
+
+  public MessageController(IDatabase database, Session session, EntityManager entityManager) {
+    this.messageListView = new MessageListView(session, database.getMessages());
+    this.messageListView.addObserver(this);
     this.database = database;
     this.session = session;
+    this.mEntityManager = entityManager;
   }
 
   public MessageListView getMessageListView() {
@@ -24,8 +29,9 @@ public class MessageController implements IMessageObserver {
   }
 
   @Override
-  public void notifyMessage(String message) {
-    database.addMessage(new Message(session.getConnectedUser(), message));
-    messageListView.refreshView();
+  public void notifyMessage(Message message) {
+    database.addMessage(message);
+    mEntityManager.writeMessageFile(message);
+    messageListView.refreshView(database.getMessages());
   }
 }
