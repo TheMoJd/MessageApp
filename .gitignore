@@ -37,4 +37,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-src/main/java/com/ubo/tp/message/config/ConfigManager.java
+src/main/resources/configuration.properties
