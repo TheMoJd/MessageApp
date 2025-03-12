@@ -3,9 +3,13 @@ package com.ubo.tp.message.ihm;
 
 import com.ubo.tp.message.action.IAction;
 import com.ubo.tp.message.action.IActionObserver;
+import com.ubo.tp.message.config.ConfigManager;
+import com.ubo.tp.message.common.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -70,8 +74,18 @@ public class MessageAppMainView extends JFrame implements IAction {
         JMenuBar menuBar = new JMenuBar();
 
         JMenu fileMenu = new JMenu("File");
+        JMenuItem changeDirectoryMenuItem = new JMenuItem("Change exchange repository", new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("images/editIcon_20.png"))));
         JMenuItem exitMenuItem = new JMenuItem("Exit", new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("images/exitIcon_20.png"))));
+        changeDirectoryMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                FileChooserView fileChooserView = new FileChooserView(JFileChooser.DIRECTORIES_ONLY);
+                File file = fileChooserView.getSelectedDirectory();
+                ConfigManager.setProperty(Constants.CONFIGURATION_KEY_EXCHANGE_DIRECTORY, file.getAbsolutePath());
+            }
+        });
         exitMenuItem.addActionListener(e -> System.exit(0));
+        fileMenu.add(changeDirectoryMenuItem);
         fileMenu.add(exitMenuItem);
 
         JMenu helpMenu = new JMenu("Help");

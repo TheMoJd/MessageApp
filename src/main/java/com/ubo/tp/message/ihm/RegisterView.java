@@ -16,6 +16,8 @@ public class RegisterView extends JPanel implements IRegister {
     private final JTextField tagField;
     private final JPasswordField passwordField;
     private final JPasswordField confirmPasswordField;
+    private final JButton choosePhotoButton;
+    private String avatarPath = "";
     private final JButton registerButton;
     private final JButton loginButton;
     private final JLabel errorLabel;
@@ -75,9 +77,31 @@ public class RegisterView extends JPanel implements IRegister {
         gbc.gridx = 1;
         add(confirmPasswordField, gbc);
 
+        // Bouton choisir une photo de profil
+        choosePhotoButton = new JButton("Choisir une photo de profil");
+        gbc.gridy = 5;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(choosePhotoButton, gbc);
+        choosePhotoButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                FileChooserView fileChooserView = new FileChooserView(JFileChooser.FILES_ONLY);
+                avatarPath = fileChooserView.getSelectedDirectory().getAbsolutePath();
+                if (avatarPath.endsWith(".png") || avatarPath.endsWith(".jpg") || avatarPath.endsWith(".jpeg")) {
+                    System.out.println("Avatar path: " + avatarPath);
+                } else {
+                    avatarPath = "";
+                    JOptionPane.showMessageDialog(null, "Veuillez choisir une image au format .png, .jpg ou .jpeg", "Erreur", JOptionPane.ERROR_MESSAGE);
+
+                }
+            }
+        });
+
         // Bouton inscription
         registerButton = new JButton("S'inscrire");
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -85,7 +109,7 @@ public class RegisterView extends JPanel implements IRegister {
 
         // Bouton connexion
         loginButton = new JButton("Connexion");
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -93,7 +117,7 @@ public class RegisterView extends JPanel implements IRegister {
 
         errorLabel = new JLabel();
         errorLabel.setForeground(Color.RED);
-        gbc.gridy = 7;
+        gbc.gridy = 8;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         add(errorLabel, gbc);
@@ -108,8 +132,9 @@ public class RegisterView extends JPanel implements IRegister {
 
     private void manageAction() {
         registerButton.addActionListener(e -> {
-            User user = new User(null, tagField.getText(), new String(passwordField.getPassword()), nameField.getText(), new HashSet<>(), "");
+            User user = new User(null, tagField.getText(), new String(passwordField.getPassword()), nameField.getText(), new HashSet<>(), avatarPath);
             register(user, new String(confirmPasswordField.getPassword()));
+            avatarPath = "";
         });
     }
 

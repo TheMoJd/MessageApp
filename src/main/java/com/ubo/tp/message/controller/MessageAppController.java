@@ -22,6 +22,8 @@ import com.ubo.tp.message.datamodel.Message;
 import com.ubo.tp.message.datamodel.User;
 import com.ubo.tp.message.ihm.*;
 
+import javax.swing.*;
+
 /**
  * Classe principale l'application.
  *
@@ -131,7 +133,7 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 
 		if (mExchangeDirectoryPath == null || mExchangeDirectoryPath.isEmpty()) {
 
-			FileChooserView fileChooserView = new FileChooserView();
+			FileChooserView fileChooserView = new FileChooserView(JFileChooser.DIRECTORIES_ONLY);
 			File selectedDirectory = fileChooserView.getSelectedDirectory();
 
 			if (isValideExchangeDirectory(selectedDirectory)) {

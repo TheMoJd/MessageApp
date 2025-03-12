@@ -5,12 +5,15 @@ import java.io.File;
 
 public class FileChooserView extends JFileChooser {
 
-    public FileChooserView() {
+    private int fileSelectionMode;
+
+    public FileChooserView(int fileSelectionMode) {
+        this.fileSelectionMode = fileSelectionMode;
         initFileChooser();
     }
 
     private void initFileChooser() {
-        this.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        this.setFileSelectionMode(fileSelectionMode);
         this.showDialog(null, "Sélectionner");
     }
 

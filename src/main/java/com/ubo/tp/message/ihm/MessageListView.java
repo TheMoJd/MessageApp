@@ -43,12 +43,7 @@ public class MessageListView extends JPanel implements IMessage, ISearch {
     searchPanel.add(searchButton, BorderLayout.EAST);
     add(searchPanel, BorderLayout.NORTH);
 
-    searchButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        search(searchField.getText());
-      }
-    });
+    searchButton.addActionListener(e -> search(searchField.getText()));
 
     // Message panel
     messagesPanel = new JPanel();
@@ -75,7 +70,7 @@ public class MessageListView extends JPanel implements IMessage, ISearch {
           }
           messageField.setText("");
         } else {
-          JOptionPane.showMessageDialog(null, "la taille du message doit faire moins de 200 caractères (le message actuel fait " + messageText.length() + ")", "Error", JOptionPane.ERROR_MESSAGE);
+          JOptionPane.showMessageDialog(null, "le message ne peut pas être vide et sa taille doit faire moins de 200 caractères (le message actuel fait " + messageText.length() + ")", "Error", JOptionPane.ERROR_MESSAGE);
         }
       }
     });
