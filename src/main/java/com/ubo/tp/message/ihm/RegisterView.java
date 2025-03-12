@@ -93,7 +93,7 @@ public class RegisterView extends JPanel implements IRegister {
 
         errorLabel = new JLabel();
         errorLabel.setForeground(Color.RED);
-        gbc.gridy = 6;
+        gbc.gridy = 7;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
         add(errorLabel, gbc);

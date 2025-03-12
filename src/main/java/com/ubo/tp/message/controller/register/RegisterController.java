@@ -23,8 +23,20 @@ public class RegisterController implements IRegisterObserver {
         registerView.addObserver(this);
     }
 
+    private boolean areFieldsValid(User user, String confirmPassword) {
+        return !user.getName().isEmpty() &&
+                !user.getUserTag().isEmpty() &&
+                !user.getUserPassword().isEmpty() &&
+                !confirmPassword.isEmpty();
+    }
+
     @Override
     public void notifyRegister(User createdUser, String confirmPassword) {
+        if (!areFieldsValid(createdUser, confirmPassword)) {
+            registerView.setError("Tous les champs doivent être remplis");
+            return;
+        }
+
         if (!isPasswordValid(createdUser.getUserPassword(), confirmPassword)) {
             registerView.setError("Les mots de passe ne correspondent pas");
             return;
