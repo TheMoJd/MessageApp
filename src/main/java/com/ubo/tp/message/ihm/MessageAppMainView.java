@@ -92,8 +92,7 @@ public class MessageAppMainView extends JFrame implements IAction {
     private void manageAction() {
         // Add action listeners for the buttons in the center panel
         for (Component component : centerPanel.getComponents()) {
-            if (component instanceof JButton) {
-                JButton button = (JButton) component;
+            if (component instanceof JButton button) {
                 if (button.getText().equals("Connexion")) {
                     button.addActionListener(e -> loginAction());
                 } else if (button.getText().equals("Inscription")) {

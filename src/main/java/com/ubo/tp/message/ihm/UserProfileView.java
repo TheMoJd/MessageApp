@@ -1,9 +1,11 @@
 package com.ubo.tp.message.ihm;
 
+import com.ubo.tp.message.config.ConfigManager;
 import com.ubo.tp.message.datamodel.User;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 import static com.ubo.tp.message.common.Constants.AVATAR_PATH;
 
@@ -21,7 +23,7 @@ public class UserProfileView extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         avatarLabel = new JLabel();
-        initAvatar(user.getAvatarPath() == null ? AVATAR_PATH : user.getAvatarPath());
+        initAvatar(user.getAvatarPath().isEmpty() ? ConfigManager.getProperty(AVATAR_PATH) : user.getAvatarPath());
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;

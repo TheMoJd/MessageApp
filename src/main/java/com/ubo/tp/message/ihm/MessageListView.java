@@ -2,6 +2,8 @@ package com.ubo.tp.message.ihm;
 
 import com.ubo.tp.message.controller.message.IMessage;
 import com.ubo.tp.message.controller.message.IMessageObserver;
+import com.ubo.tp.message.controller.search.ISearch;
+import com.ubo.tp.message.controller.search.ISearchObserver;
 import com.ubo.tp.message.core.session.ISession;
 import com.ubo.tp.message.datamodel.Message;
 
@@ -12,27 +14,43 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.List;
 
-public class MessageListView extends JPanel implements IMessage {
+public class MessageListView extends JPanel implements IMessage, ISearch {
 
   private ISession session;
   protected JPanel messagesPanel;
   protected long dateTime;
   private JTextField messageField;
   private JButton sendButton;
-  private List<IMessageObserver> observers;
+  private JTextField searchField;
+  private List<IMessageObserver> messageObservers;
+  private List<ISearchObserver> searchObservers;
 
   public long getDateTime() {
     return dateTime;
   }
 
-  public void setDateTime(long dateTime) {
-    this.dateTime = dateTime;
-  }
-
-  public MessageListView(ISession session, Set<Message> messages) {
+  public MessageListView(ISession session) {
     this.session = session;
-    observers = new ArrayList<>();
+    messageObservers = new ArrayList<>();
+    searchObservers = new ArrayList<>();
     setLayout(new BorderLayout());
+
+    // Search panel
+    JPanel searchPanel = new JPanel(new BorderLayout());
+    searchField = new JTextField();
+    JButton searchButton = new JButton("Search");
+    searchPanel.add(searchField, BorderLayout.CENTER);
+    searchPanel.add(searchButton, BorderLayout.EAST);
+    add(searchPanel, BorderLayout.NORTH);
+
+    searchButton.addActionListener(new ActionListener() {
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        search(searchField.getText());
+      }
+    });
+
+    // Message panel
     messagesPanel = new JPanel();
     messagesPanel.setLayout(new BoxLayout(messagesPanel, BoxLayout.Y_AXIS));
     JScrollPane scrollPane = new JScrollPane(messagesPanel);
@@ -50,12 +68,14 @@ public class MessageListView extends JPanel implements IMessage {
       @Override
       public void actionPerformed(ActionEvent e) {
         String messageText = messageField.getText();
-        if (!messageText.isEmpty()) {
+        if ((!messageText.isEmpty()) && (messageText.length() <= 200)) {
           Message message = new Message(session.getConnectedUser(), messageText);
-          for (IMessageObserver observer : observers) {
+          for (IMessageObserver observer : messageObservers) {
             observer.notifyMessage(message);
           }
           messageField.setText("");
+        } else {
+          JOptionPane.showMessageDialog(null, "la taille du message doit faire moins de 200 caractères (le message actuel fait " + messageText.length() + ")", "Error", JOptionPane.ERROR_MESSAGE);
         }
       }
     });
@@ -81,16 +101,29 @@ public class MessageListView extends JPanel implements IMessage {
   }
 
   @Override
-  public void addObserver(IMessageObserver observer) {
-    observers.add(observer);
+  public void addMessageObserver(IMessageObserver observer) {
+    messageObservers.add(observer);
   }
 
   @Override
-  public void removeObserver(IMessageObserver observer) {
-    observers.remove(observer);
+  public void removeMessageObserver(IMessageObserver observer) {
+    messageObservers.remove(observer);
   }
 
   @Override
-  public void listMessagesChanged(Set<Message> referenceList) {
+  public void addSearchObserver(ISearchObserver observer) {
+    searchObservers.add(observer);
+  }
+
+  @Override
+  public void removeSearchObserver(ISearchObserver observer) {
+    searchObservers.remove(observer);
+  }
+
+  @Override
+  public void search(String searchString) {
+    for (ISearchObserver observer : searchObservers) {
+      observer.notifySearch(searchString);
+    }
   }
 }
