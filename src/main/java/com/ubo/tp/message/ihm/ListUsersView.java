@@ -1,5 +1,7 @@
 package com.ubo.tp.message.ihm;
 
+import com.ubo.tp.message.controller.search.ISearch;
+import com.ubo.tp.message.controller.search.ISearchObserver;
 import com.ubo.tp.message.controller.user.IUser;
 import com.ubo.tp.message.controller.user.IUserObserver;
 import com.ubo.tp.message.controller.user.UserController;
@@ -7,16 +9,15 @@ import com.ubo.tp.message.datamodel.User;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
-public class ListUsersView extends JPanel implements IUser {
+public class ListUsersView extends JPanel implements IUser, ISearch {
 
     private UserController userController;
     private Set<User> users = new HashSet<>();
     private final List<IUserObserver> observers = new ArrayList<>();
+    private List<ISearchObserver> searchObservers = new ArrayList<>();
     private SearchView searchView;
 
     public ListUsersView(UserController userController) {
@@ -31,56 +32,12 @@ public class ListUsersView extends JPanel implements IUser {
                 GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 5, 5), 0, 0));
 
-        searchView.addSearchActionListener(e -> performSearch());
+        searchView.addSearchActionListener(e -> search(searchView.getSearchQuery().toLowerCase().trim()));
 
-        updateListUsers();
+        refreshUserView(users);
     }
 
-    /**
-     * Met à jour l'affichage en listant tous les utilisateurs.
-     */
-    private void updateListUsers() {
-        removeAll();
-
-        // On réajoute la barre de recherche en haut
-        add(searchView, new GridBagConstraints(
-                0, 0, 1, 1, 1.0, 0,
-                GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
-                new Insets(5, 5, 5, 5), 0, 0));
-
-        int row = 1;
-        // Affiche chaque utilisateur via son UserView
-        for (User user : users) {
-            add(new UserView(user, userController), new GridBagConstraints(
-                    0, row++, 1, 1, 1.0, 0,
-                    GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                    new Insets(5, 5, 5, 5), 0, 0));
-        }
-
-        revalidate();
-        repaint();
-    }
-
-    /**
-     * Effectue le filtrage des utilisateurs en fonction du texte saisi dans la SearchView.
-     */
-    private void performSearch() {
-        String query = searchView.getSearchQuery().toLowerCase().trim();
-        Set<User> filteredUsers = new HashSet<>();
-
-        if (query.isEmpty()) {
-            // Si le champ est vide, on affiche tous les utilisateurs
-            filteredUsers.addAll(users);
-        } else {
-            for (User user : users) {
-                // On vérifie si le tag ou le nom de l'utilisateur contient la chaîne recherchée
-                if ((user.getUserTag() != null && user.getUserTag().toLowerCase().contains(query))
-                        || (user.getName() != null && user.getName().toLowerCase().contains(query))) {
-                    filteredUsers.add(user);
-                }
-            }
-        }
-
+    public void refreshUserView(Set<User> filteredUsers) {
         // Mise à jour de l'affichage avec les utilisateurs filtrés
         removeAll();
 
@@ -107,7 +64,7 @@ public class ListUsersView extends JPanel implements IUser {
      */
     public void setUsers(Set<User> users) {
         this.users = users;
-        updateListUsers();
+        refreshUserView(users);
     }
 
     @Override
@@ -125,7 +82,7 @@ public class ListUsersView extends JPanel implements IUser {
         for (IUserObserver observer : observers) {
             observer.notifyListUsers();
         }
-        updateListUsers();
+        refreshUserView(users);
     }
 
     @Override
@@ -136,5 +93,22 @@ public class ListUsersView extends JPanel implements IUser {
     @Override
     public void unFollow(User user) {
         // Implémentation éventuelle pour ne plus suivre un utilisateur
+    }
+
+    @Override
+    public void addSearchObserver(ISearchObserver observer) {
+        searchObservers.add(observer);
+    }
+
+    @Override
+    public void removeSearchObserver(ISearchObserver observer) {
+        searchObservers.remove(observer);
+    }
+
+    @Override
+    public void search(String searchString) {
+        for (ISearchObserver observer : searchObservers) {
+            observer.notifySearch(searchString);
+        }
     }
 }

@@ -6,6 +6,6 @@ public interface ISearch {
 
   void removeSearchObserver(ISearchObserver observer);
 
-  public void search(String searchString);
+  void search(String searchString);
 
 }
