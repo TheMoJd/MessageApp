@@ -21,6 +21,14 @@ public class MessageListView extends JPanel implements IMessage {
   private JButton sendButton;
   private List<IMessageObserver> observers;
 
+  public long getDateTime() {
+    return dateTime;
+  }
+
+  public void setDateTime(long dateTime) {
+    this.dateTime = dateTime;
+  }
+
   public MessageListView(ISession session, Set<Message> messages) {
     this.session = session;
     observers = new ArrayList<>();

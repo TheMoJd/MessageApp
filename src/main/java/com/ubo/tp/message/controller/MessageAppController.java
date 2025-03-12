@@ -1,5 +1,8 @@
 package com.ubo.tp.message.controller;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 
 import com.ubo.tp.message.action.IActionObserver;
@@ -176,6 +179,34 @@ public class MessageAppController implements IDatabaseObserver, ISessionObserver
 		System.out.println("Nouveau message ajouté : " + message.getText());
 		if (mSession.getConnectedUser() != null) {
 			mMessageController.getMessageListView().refreshView(mDatabase.getMessages());
+			// Notification d'un nouveau message
+			if (this.mMessageController.getMessageListView().getDateTime() < message.getEmissionDate() && this.mSession.getConnectedUser().isFollowing(message.getSender())) {
+				if (SystemTray.isSupported()) {
+					SystemTray tray = SystemTray.getSystemTray();
+					Image icon = Toolkit.getDefaultToolkit().getImage("src/main/resources/images/logo_20.png");
+					PopupMenu popupMenu = new PopupMenu();
+					MenuItem exitItem = new MenuItem("Quitter");
+					exitItem.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							System.exit(0);
+						}
+					});
+					popupMenu.add(exitItem);
+
+					// Création de l'objet TrayIcon
+					TrayIcon trayIcon = new TrayIcon(icon, "Notification", popupMenu);
+					try {
+						tray.add(trayIcon);
+					} catch (AWTException e) {
+						System.err.println("Impossible d'ajouter TrayIcon au SystemTray");
+					}
+
+					// Affichage de la notification
+					trayIcon.displayMessage("Nouveau message de \"" + message.getSender().getName() + "\"", message.getText(), TrayIcon.MessageType.INFO);
+				} else {
+					System.err.println("SystremTray n'est pas pris en charge !");
+				}
+			}
 		}
 	}
 
