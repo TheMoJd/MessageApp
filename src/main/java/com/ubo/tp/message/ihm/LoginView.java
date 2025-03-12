@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.ubo.tp.message.common.DataFilesManager.encrypt;
+
 public class LoginView extends JPanel implements ILogin {
     private final JTextField tagField;
     private final JPasswordField passwordField;
@@ -78,18 +80,19 @@ public class LoginView extends JPanel implements ILogin {
         gbcError.gridwidth = 2;
         add(errorLabel, gbcError);
 
-        // Action listener pour le bouton connexion
-        loginButton.addActionListener(e -> {
-            user = new User(UUID.randomUUID(), tagField.getText(), new String(passwordField.getPassword()), null, null, null);
-            login(user);
-        });
-
         setVisible(true);
+        manageAction();
     }
 
-    // Méthode permettant d'ajouter un écouteur sur le bouton inscription
     public void addRegisterListener(ActionListener listener) {
         registerButton.addActionListener(listener);
+    }
+
+    public void manageAction() {
+        loginButton.addActionListener(e -> {
+            user = new User(UUID.randomUUID(), tagField.getText(), encrypt(new String(passwordField.getPassword())), null, null, null);
+            login(user);
+        });
     }
 
     public JTextField getTagField() {

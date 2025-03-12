@@ -102,7 +102,6 @@ public class RegisterView extends JPanel implements IRegister {
         manageAction();
     }
 
-    // Méthode permettant d'ajouter un écouteur sur le bouton inscription
     public void addLoginListener(ActionListener listener) {
         loginButton.addActionListener(listener);
     }

@@ -25,14 +25,12 @@ public class ListUsersView extends JPanel implements IUser {
         setLayout(new GridBagLayout());
         setBackground(Color.WHITE);
 
-        // Ajout de la barre de recherche
         searchView = new SearchView();
         add(searchView, new GridBagConstraints(
                 0, 0, 1, 1, 1.0, 0,
                 GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,
                 new Insets(5, 5, 5, 5), 0, 0));
 
-        // Association d'un listener pour déclencher la recherche
         searchView.addSearchActionListener(e -> performSearch());
 
         updateListUsers();
@@ -72,7 +70,7 @@ public class ListUsersView extends JPanel implements IUser {
 
         if (query.isEmpty()) {
             // Si le champ est vide, on affiche tous les utilisateurs
-            filteredUsers = users;
+            filteredUsers.addAll(users);
         } else {
             for (User user : users) {
                 // On vérifie si le tag ou le nom de l'utilisateur contient la chaîne recherchée
@@ -102,10 +100,6 @@ public class ListUsersView extends JPanel implements IUser {
 
         revalidate();
         repaint();
-    }
-
-    public Set<User> getUsers() {
-        return users;
     }
 
     /**
